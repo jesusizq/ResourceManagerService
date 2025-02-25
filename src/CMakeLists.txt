@@ -1,0 +1,5 @@
+add_subdirectory(contentTypes)
+add_subdirectory(action)
+add_subdirectory(pipeline)
+add_subdirectory(resource)
+add_subdirectory(logger)
