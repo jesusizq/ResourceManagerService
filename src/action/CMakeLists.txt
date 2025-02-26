@@ -6,6 +6,7 @@ target_include_directories(${LIBRARY_NAME} INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}
 
 target_link_libraries(${LIBRARY_NAME} INTERFACE
     Resource
+    Logger
 )
 
 # Include subdirectories

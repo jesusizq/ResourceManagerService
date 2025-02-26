@@ -1,39 +1,24 @@
 #include "FileLoader.h"
-#include <Logger.h>
-#include <fstream>
+#include <filesystem>
 
-Action::ResourcePtr FileLoader::process(Action::ResourcePtr resource) {
-  if (!resource) {
-    Logger::log("Received null resource", Logger::LogLevel::ERROR);
-    return nullptr;
-  }
-
-  const auto uri{resource->getUri()};
-  const auto resourcePath{std::string(
-      uri.substr(LoaderTypes::getScheme(LoaderTypes::Type::File).size()))};
-  Logger::log("Loading resource from " + resourcePath, Logger::LogLevel::INFO);
-
-  // Simulate loading file
-  auto fileData{std::make_unique<std::vector<uint8_t>>()};
-  fileData->push_back('D');
-  fileData->push_back('A');
-  fileData->push_back('T');
-  fileData->push_back('A');
-
-  const auto contentType{ContentType::getContentTypeFromPath(resourcePath)};
-  auto loadedResource{
-      std::make_unique<Resource>(std::move(fileData), contentType)};
-
-  // Copy metadata from the original resource
-  loadedResource->getMetadata().merge(resource->getMetadata());
-
-  // Add additional metadata about the loading
-  loadedResource->getMetadata().set("loader", this->getName());
-  loadedResource->getMetadata().set("original_uri",
-                                    std::string(resource->getUri()));
-
-  Logger::log("FileLoader: Successfully loaded file as " +
-                  ContentType::toString(contentType),
-              Logger::LogLevel::INFO);
-  return loadedResource;
+ResourceDataPtr FileLoader::readResource(std::string_view resourcePath,
+                                         std::string_view uri) {
+  // Simulate file data
+  auto data{std::make_unique<Resource::Data>()};
+  data->push_back('F');
+  data->push_back('I');
+  data->push_back('L');
+  data->push_back('E');
+  return data;
 }
+
+void FileLoader::addMetadata(ResourcePtr &rsc, std::string_view resourcePath,
+                             std::string_view uri) {
+  // Simulate metadata addition
+  std::filesystem::path path(resourcePath);
+  rsc->getMetadata().set("file_size", 1024); // Simulated file size
+  rsc->getMetadata().set("file_extension", path.extension().string());
+  rsc->getMetadata().set("file_name", path.filename().string());
+  rsc->getMetadata().set("file_path", path.string());
+  rsc->getMetadata().set("last_modified", "2025-01-01");
+};

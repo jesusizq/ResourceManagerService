@@ -1,7 +1,7 @@
 #ifndef LOADER_FACTORY_H
 #define LOADER_FACTORY_H
 
-#include <Action.h>
+#include <BaseLoader.h>
 #include <BundleLoader.h>
 #include <FileLoader.h>
 #include <HttpLoader.h>
@@ -11,13 +11,13 @@
 
 class LoaderFactory {
 public:
-  static std::unique_ptr<Action> createLoader(std::string_view uri) {
-    if (LoaderTypes::detectType(uri) == LoaderTypes::Type::File)
+  static std::unique_ptr<BaseLoader> createLoader(LoaderTypes::Type type) {
+    if (type == LoaderTypes::Type::File)
       return std::make_unique<FileLoader>();
-    else if (LoaderTypes::detectType(uri) == LoaderTypes::Type::Http ||
-             LoaderTypes::detectType(uri) == LoaderTypes::Type::Https)
+    else if (type == LoaderTypes::Type::Http ||
+             type == LoaderTypes::Type::Https)
       return std::make_unique<HttpLoader>();
-    else if (LoaderTypes::detectType(uri) == LoaderTypes::Type::Bundle)
+    else if (type == LoaderTypes::Type::Bundle)
       return std::make_unique<BundleLoader>();
 
     throw std::invalid_argument("Unknown URI scheme");

@@ -1,7 +1,7 @@
 #ifndef PROCESSOR_FACTORY_H
 #define PROCESSOR_FACTORY_H
 
-#include <Action.h>
+#include <BaseProcessor.h>
 #include <ContentType.h>
 #include <Decompressor.h>
 #include <ImageDecoder.h>
@@ -11,11 +11,8 @@
 
 class ProcessorFactory {
 public:
-  static std::unique_ptr<Action> createProcessor(std::string_view typeString) {
-    return createProcessor(ContentType::fromString(typeString));
-  }
-
-  static std::unique_ptr<Action> createProcessor(ContentType::Type type) {
+  static std::unique_ptr<BaseProcessor>
+  createProcessor(ContentType::Type type) {
     if (ContentType::isCompressed(type)) {
       return std::make_unique<Decompressor>();
     } else if (ContentType::isJson(type)) {

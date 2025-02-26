@@ -9,6 +9,7 @@ int main() {
   while (running) {
     Logger::log("Enter resource URI (or type 'exit' or 'q' to quit): ",
                 Logger::LogLevel::INFO);
+    std::cout << std::flush;
 
     std::getline(std::cin, uri);
     if (uri.empty()) {
@@ -20,7 +21,7 @@ int main() {
       continue;
     }
 
-    Logger::log("Processing resource with URI: [" + uri + "]",
+    Logger::log("Computing resource with URI: [" + uri + "]",
                 Logger::LogLevel::INFO);
 
     ComputePipeline pipeline;
