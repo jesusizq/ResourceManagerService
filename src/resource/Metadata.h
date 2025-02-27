@@ -10,12 +10,19 @@
 
 class Metadata {
 public:
-  // Define the possible types that can be stored as metadata values
-  using MetadataValue =
-      std::variant<std::string, int, std::shared_ptr<Metadata>>;
+  using PrevMetadataPtr = std::shared_ptr<const Metadata>;
+  // Possible types that can be stored as metadata values
+  using MetadataValue = std::variant<std::string, int, PrevMetadataPtr>;
+
+  Metadata() = default;
+  Metadata(const Metadata &other);
+  Metadata(Metadata &&other) noexcept;
+  Metadata &operator=(const Metadata &other);
+  Metadata &operator=(Metadata &&other) noexcept;
+  ~Metadata() = default;
 
   template <typename T> std::optional<T> get(const std::string &key) const {
-    auto it = m_entries.find(key);
+    const auto it{m_entries.find(key)};
     if (it == m_entries.end()) {
       return std::nullopt;
     }
@@ -28,7 +35,16 @@ public:
   }
 
   template <typename T> void set(const std::string &key, const T &value) {
+    if (key == PREV_METADATA_KEY) {
+      throw std::invalid_argument(INVALID_KEY_ERROR);
+    }
     m_entries[key] = value;
+  }
+  template <typename T> void set(const std::string &key, T &&value) {
+    if (key == PREV_METADATA_KEY) {
+      throw std::invalid_argument(INVALID_KEY_ERROR);
+    }
+    m_entries[key] = std::forward<T>(value);
   }
 
   void clear() { m_entries.clear(); }
@@ -43,19 +59,12 @@ public:
     return m_entries.find(key) != m_entries.end();
   }
 
-  void storeAsPrevious() {
-    auto previousMetadata = std::make_shared<Metadata>();
-    previousMetadata->m_entries = m_entries;
-    m_entries.clear();
-    m_entries["prev_metadata"] = previousMetadata;
-  }
-
-  std::shared_ptr<Metadata> getPreviousMetadata() const {
-    auto previous = get<std::shared_ptr<Metadata>>("prev_metadata");
-    return previous.value_or(nullptr);
-  }
+  void storeAsPrevious();
+  PrevMetadataPtr getPrevious() const;
 
 private:
+  static constexpr const char *PREV_METADATA_KEY = "prev";
+  static constexpr const char *INVALID_KEY_ERROR = "Invalid key";
   std::unordered_map<std::string, MetadataValue> m_entries;
 };
 

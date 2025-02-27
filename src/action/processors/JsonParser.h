@@ -10,6 +10,7 @@ public:
     return ContentType::isJson(resource->getContentType());
   };
 
+  void addMetadata(ResourcePtr &resource) override;
   ResourceDataPtr processData(const ResourcePtr &resource) override;
   ContentType::Type getNewContentType() const override {
     return ContentType::Type::PARSED_JSON;

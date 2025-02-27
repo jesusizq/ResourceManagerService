@@ -1,6 +1,7 @@
 set(LIBRARY_NAME "Resource")
 set(LIBRARY_SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/Resource.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Metadata.cpp"
 )
 
 set(LIBRARY_HEADERS

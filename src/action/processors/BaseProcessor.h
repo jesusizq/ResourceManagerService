@@ -10,12 +10,13 @@
 using ResourcePtr = std::unique_ptr<Resource>;
 
 class BaseProcessor : public Action {
+private:
+  void updateMetadata(ResourcePtr &resource);
+
 protected:
   virtual ResourceDataPtr processData(const ResourcePtr &resource) = 0;
   virtual ContentType::Type getNewContentType() const = 0;
-
-  virtual void updateMetadata(ResourcePtr &resource,
-                              const ResourcePtr &originalResource);
+  virtual void addMetadata(ResourcePtr &resource) = 0;
 
 public:
   ResourcePtr process(ResourcePtr &resource) override;
