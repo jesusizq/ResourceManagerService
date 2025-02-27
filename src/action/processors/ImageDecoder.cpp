@@ -11,3 +11,13 @@ ResourceDataPtr ImageDecoder::processData(const ResourcePtr &resource) {
       std::make_unique<Resource::Data>(std::move(resource->getData()))};
   return processedData;
 }
+
+void ImageDecoder::addMetadata(ResourcePtr &resource) {
+  auto &metadata{resource->getMetadata()};
+  metadata.set("imageDecoder", std::string(getName()));
+  metadata.set("imageFormat", "PNG");
+  metadata.set("width", "1920");
+  metadata.set("height", "1080");
+  metadata.set("colorSpace", "RGB");
+  metadata.set("bitDepth", "8");
+}

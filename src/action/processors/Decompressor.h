@@ -10,9 +10,9 @@ public:
     return ContentType::isCompressed(resource->getContentType());
   };
 
+  void addMetadata(ResourcePtr &resource) override;
   ResourceDataPtr processData(const ResourcePtr &resource) override;
   ContentType::Type getNewContentType() const override;
-
   std::string_view getName() const override { return "Decompressor"; }
 };
 

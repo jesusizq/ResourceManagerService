@@ -18,14 +18,24 @@ public:
   using Data = std::vector<uint8_t>;
 
   explicit Resource(std::string_view uri);
-  virtual ~Resource() = default;
+  Resource(const Resource &other);
+  Resource(Resource &&other) noexcept;
+  Resource &operator=(const Resource &other);
+  Resource &operator=(Resource &&other) noexcept;
+  ~Resource() = default;
 
   ContentType::Type getContentType() const { return m_type; }
   std::string getType() const { return ContentType::toString(m_type); }
   std::string getUri() const { return m_uri; }
   const Data &getData() const { return m_data; }
   Data &getData() { return m_data; }
+
+  void setData(const Data &data) { m_data = data; }
   void setData(Data &&data) { m_data = std::move(data); }
+
+  template <typename... Args> void emplaceData(Args &&...args) {
+    m_data = Data(std::forward<Args>(args)...);
+  }
 
   Metadata &getMetadata() { return m_metadata; }
   const Metadata &getMetadata() const { return m_metadata; }

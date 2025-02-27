@@ -12,16 +12,18 @@ ResourcePtr BaseProcessor::process(ResourcePtr &resource) {
 
   auto processedResource{std::make_unique<Resource>(resource->getUri())};
 
-  // Copy previous metadata and then store it as previous
-  auto newMetadata{processedResource->getMetadata()};
+  // First copy the original metadata and store it as previous before adding new
+  // metadata
+  auto &newMetadata{processedResource->getMetadata()};
   newMetadata = resource->getMetadata();
   newMetadata.storeAsPrevious();
 
+  // Process data and set content type
   processedResource->setData(std::move(*this->processData(resource)));
   processedResource->setContentType(this->getNewContentType());
-  processedResource->getMetadata().merge(newMetadata);
 
-  this->updateMetadata(processedResource, resource);
+  // Add processor-specific metadata
+  this->updateMetadata(processedResource);
 
   Logger::log(std::string(getName()) + ": Successfully processed resource as " +
                   processedResource->getType(),
@@ -29,10 +31,8 @@ ResourcePtr BaseProcessor::process(ResourcePtr &resource) {
   return processedResource;
 }
 
-void BaseProcessor::updateMetadata(ResourcePtr &resource,
-                                   const ResourcePtr &originalResource) {
-  resource->getMetadata().merge(originalResource->getMetadata());
-  resource->getMetadata().set("processor", std::string(this->getName()));
-  resource->getMetadata().set("original_type",
-                              std::string(originalResource->getType()));
+void BaseProcessor::updateMetadata(ResourcePtr &resource) {
+  auto &metadata{resource->getMetadata()};
+  metadata.set("processor", std::string(this->getName()));
+  this->addMetadata(resource);
 }
